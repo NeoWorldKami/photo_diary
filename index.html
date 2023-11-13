@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自拍照片</title>
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+        .item img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .item h3 {
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .item .date {
+            color: gray;
+        }
+
+        .item a {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+<input id="url" placeholder="输入host地址"></input>
+<button onclick="loadData()">加载</button>
+<div id="output" class="container"></div>
+
+<script>
+
+var data;
+
+fetch('data.json').then(response => response.json()).then(d => data = d)
+	.catch(error => console.error('Error loading JSON:', error));
+
+var outputContainer = document.getElementById('output');
+
+    function loadData() {
+        var urlInput = document.getElementById('url');
+        var hostname = "https://" + urlInput.value.trim() + ".net"; 
+
+data.forEach(function (item) {
+                    var div = document.createElement('div');
+                    div.className = 'item';
+
+                    if (!item.img.endsWith('noimg.jpg')) {
+                        var img = document.createElement('img');
+                        img.src = hostname + item.img;
+                        div.appendChild(img);
+                    }
+
+                    var title = document.createElement('h3');
+                    title.textContent = item.title;
+                    div.appendChild(title);
+
+                    var content = document.createElement('div');
+                    var contentLines = item.content.split(/  /g);
+                    contentLines.forEach(function (line) {
+                        var paragraph = document.createElement('p');
+                        paragraph.textContent = line;
+                        content.appendChild(paragraph);
+                    });
+                    div.appendChild(content);
+
+                    var flexContainer = document.createElement('div');
+                    flexContainer.className = 'flex-container';
+
+                    var date = document.createElement('div');
+                    date.textContent = item.date;
+                    date.className = 'date';
+                    flexContainer.appendChild(date);
+
+                    var link = document.createElement('a');
+                    link.textContent = '跳转';
+                    link.href = hostname + item.url;
+                    flexContainer.appendChild(link);
+
+                    div.appendChild(flexContainer);
+                    outputContainer.appendChild(div);
+                });
+    }
+</script>
+
+</body>
+</html>
+
